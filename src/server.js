@@ -13,7 +13,7 @@ export const setupServer = () => {
   app.use(pino());
   app.use(express.json());
 
-  app.use('/contacts', contactsRouters);
+  app.use('/', contactsRouters);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
