@@ -11,6 +11,6 @@ const router = express.Router();
 
 router.get('/contacts', ctrlWrapper(getContacts));
 router.get('/contacts/:contactId', ctrlWrapper(getContact));
-router.post('contacts', ctrlWrapper(createContactController));
+router.post('/contacts', ctrlWrapper(createContactController));
 
 export default router;
