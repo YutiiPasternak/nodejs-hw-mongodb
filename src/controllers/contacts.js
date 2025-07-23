@@ -6,9 +6,17 @@ import {
   updateContact,
   deleteContact,
 } from '../services/contacts.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { getAllContacts } from '../services/contacts.js';
 
 export const getContacts = async (req, res) => {
-  const contacts = await getAllContacts();
+  const { page, perPage } = parsePaginationParams(req.query);
+
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+  });
+
   res.status(200).json({
     status: 200,
     message: 'Successfully found contacts!',
@@ -86,4 +94,18 @@ export const deleteContactController = async (req, res) => {
   }
 
   res.status(204).send();
+};
+
+export const getContactController = async (req, res) => {
+  const { page, perPage } = parsePaginationParams(req.query);
+  const contacts = await getAllStudents({
+    page,
+    perPage,
+  });
+
+  res.json({
+    status: 200,
+    message: 'Successfully found students!',
+    data: contacts,
+  });
 };
