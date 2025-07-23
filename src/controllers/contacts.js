@@ -13,6 +13,17 @@ export const getContacts = async (req, res, next) => {
     const { page, perPage } = parsePaginationParams(req.query);
     const { sortBy = 'name', sortOrder = 'asc' } = req.query;
 
+    const allowedSortFields = ['name', 'email', 'phoneNumber'];
+    const allowedSortOrders = ['asc', 'desc'];
+
+    if (!allowedSortFields.includes(sortBy)) {
+      throw createHttpError(400, `Invalid sortBy field: ${sortBy}`);
+    }
+
+    if (!allowedSortOrders.includes(sortOrder)) {
+      throw createHttpError(400, `Invalid sortOrder value: ${sortOrder}`);
+    }
+
     const contacts = await getAllContacts(page, perPage, sortBy, sortOrder);
 
     res.status(200).json({
