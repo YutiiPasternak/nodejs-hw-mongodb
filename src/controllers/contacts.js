@@ -7,7 +7,6 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-import { getAllContacts } from '../services/contacts.js';
 
 export const getContacts = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
