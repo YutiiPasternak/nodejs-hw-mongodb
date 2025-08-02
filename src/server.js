@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
-import contactsRouters from './routers/contacts.js';
 import process from 'process';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
