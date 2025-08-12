@@ -30,27 +30,47 @@ export const getContacts = async (req, res, next) => {
       throw createHttpError(400, `Invalid sortOrder value: ${sortOrder}`);
     }
 
-    const filter = {};
+    const filter = { userId };
+
     if (isFavourite !== undefined) {
       filter.isFavourite = isFavourite === 'true';
     }
     if (contactType) {
-      filter.type = contactType;
+      filter.contactType = contactType;
     }
 
-    const contacts = await getAllContacts({
+    const totalContacts = await getAllContacts({
+      userId,
+      filterOnly: true,
+      filter,
+    });
+
+    const total = totalContacts.length;
+    const totalPages = Math.ceil(total / perPage);
+    const skip = (page - 1) * perPage;
+
+    // відфільтровані та відсортовані контакти з пагінацією
+    const paginatedContacts = await getAllContacts({
       page,
       perPage,
       sortBy,
       sortOrder,
       userId,
       filter,
+      skip,
     });
 
     res.status(200).json({
       status: 200,
       message: 'Successfully found contacts!',
-      data: contacts,
+      data: {
+        data: paginatedContacts,
+        totalPages,
+        hasPreviousPage: page > 1,
+        hasNextPage: page < totalPages,
+        currentPage: page,
+        perPage,
+      },
     });
   } catch (error) {
     next(error);
