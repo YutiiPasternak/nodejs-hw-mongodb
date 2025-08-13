@@ -3,6 +3,8 @@ import { validateBody } from '../middlewares/validateBody.js';
 import {
   loginUserSchema,
   registerUserSchema,
+  resetPasswordSchema,
+  sendRestEmailSchema,
 } from '../validationSchemas/auth.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
