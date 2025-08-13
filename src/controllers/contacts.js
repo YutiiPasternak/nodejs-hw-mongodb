@@ -31,25 +31,9 @@ export const getContacts = async (req, res, next) => {
     }
 
     const filter = { userId };
+    if (isFavourite !== undefined) filter.isFavourite = isFavourite === 'true';
+    if (contactType) filter.contactType = contactType;
 
-    if (isFavourite !== undefined) {
-      filter.isFavourite = isFavourite === 'true';
-    }
-    if (contactType) {
-      filter.contactType = contactType;
-    }
-
-    const totalContacts = await getAllContacts({
-      userId,
-      filterOnly: true,
-      filter,
-    });
-
-    const total = totalContacts.length;
-    const totalPages = Math.ceil(total / perPage);
-    const skip = (page - 1) * perPage;
-
-    // відфільтровані та відсортовані контакти з пагінацією
     const paginatedContacts = await getAllContacts({
       page,
       perPage,
@@ -57,20 +41,12 @@ export const getContacts = async (req, res, next) => {
       sortOrder,
       userId,
       filter,
-      skip,
     });
 
     res.status(200).json({
       status: 200,
       message: 'Successfully found contacts!',
-      data: {
-        data: paginatedContacts,
-        totalPages,
-        hasPreviousPage: page > 1,
-        hasNextPage: page < totalPages,
-        currentPage: page,
-        perPage,
-      },
+      data: paginatedContacts,
     });
   } catch (error) {
     next(error);
