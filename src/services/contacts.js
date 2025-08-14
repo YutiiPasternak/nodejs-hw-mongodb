@@ -10,32 +10,26 @@ export const getAllContacts = async ({
   filter = {},
   userId,
 }) => {
-  const skip = Math.max(0, (page - 1) * perPage);
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
 
-  // Формуємо базовий запит з фільтрами
-  const baseQuery = ContactsCollection.find({ userId });
+  const contactsQuery = ContactsCollection.find({ userId });
 
   if (filter.type) {
-    baseQuery.where('contactType').equals(filter.type);
+    contactsQuery.where('type').equals(filter.type);
   }
-  if (filter.isFavourite !== undefined) {
-    baseQuery.where('isFavourite').equals(filter.isFavourite);
+  if (filter.isFavourite) {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
-
-  // Клон для підрахунку без пагінації
-  const countQuery = baseQuery.clone();
-
   const [contactsCount, contacts] = await Promise.all([
-    countQuery.countDocuments(),
-    baseQuery
+    contactsQuery.clone().countDocuments(),
+    contactsQuery
       .skip(skip)
-      .limit(perPage)
+      .limit(limit)
       .sort({ [sortBy]: sortOrder })
       .exec(),
   ]);
-
-  const paginationData = calculatePaginationData(contactsCount, perPage, page);
-
+  const paginationData = calculatePaginationData(contactsCount, page, perPage);
   return {
     data: contacts,
     ...paginationData,
