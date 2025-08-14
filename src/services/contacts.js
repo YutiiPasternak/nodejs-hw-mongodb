@@ -12,19 +12,16 @@ export const getAllContacts = async ({
 }) => {
   const skip = Math.max(0, (page - 1) * perPage);
 
-  // Формуємо запит з усіма фільтрами
   const contactsQuery = ContactsCollection.find({ userId });
 
   if (filter.type) {
     contactsQuery.where('type').equals(filter.type);
   }
 
-  // Перевірка на undefined, щоб працювало і для false
   if (filter.isFavourite !== undefined) {
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-  // Виконуємо два запити паралельно
   const [totalItems, contacts] = await Promise.all([
     contactsQuery.clone().countDocuments(),
     contactsQuery
@@ -34,9 +31,8 @@ export const getAllContacts = async ({
       .exec(),
   ]);
 
-  // Повертаємо дані без дублювання data.data
   return {
-    contacts, // тепер масив контактів прямо тут
+    contacts,
     ...calculatePaginationData(totalItems, page, perPage),
   };
 };
