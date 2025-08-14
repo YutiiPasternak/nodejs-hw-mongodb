@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  getContacts,
+  getContactsController,
   getContact,
   createContactController,
   updateContactController,
@@ -17,26 +17,21 @@ import { authenticate } from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
-router.get('/', authenticate, ctrlWrapper(getContacts));
-router.get('/:contactId', authenticate, isValidId, ctrlWrapper(getContact));
+router.use(authenticate);
+
+router.get('/', ctrlWrapper(getContactsController));
+router.get('/:contactId', isValidId, ctrlWrapper(getContact));
 router.post(
   '/',
-  authenticate,
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
 router.patch(
   '/:contactId',
-  authenticate,
   isValidId,
   validateBody(updateContactSchema),
   ctrlWrapper(updateContactController),
 );
-router.delete(
-  '/:contactId',
-  authenticate,
-  isValidId,
-  ctrlWrapper(deleteContactController),
-);
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 export default router;

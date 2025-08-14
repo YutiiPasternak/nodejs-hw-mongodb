@@ -7,46 +7,28 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { paresSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 
-export const getContacts = async (req, res, next) => {
+export const getContactsController = async (req, res, next) => {
   try {
     const { page, perPage } = parsePaginationParams(req.query);
-    const {
-      sortBy = 'name',
-      sortOrder = 'asc',
-      isFavourite,
-      contactType,
-    } = req.query;
-    const userId = req.user._id;
+    const { sortBy, sortOrder } = paresSortParams(req.query);
+    const filter = parseFilterParams(req.query);
 
-    const allowedSortFields = ['name', 'email', 'phoneNumber'];
-    const allowedSortOrders = ['asc', 'desc'];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw createHttpError(400, `Invalid sortBy field: ${sortBy}`);
-    }
-
-    if (!allowedSortOrders.includes(sortOrder)) {
-      throw createHttpError(400, `Invalid sortOrder value: ${sortOrder}`);
-    }
-
-    const filter = { userId };
-    if (isFavourite !== undefined) filter.isFavourite = isFavourite === 'true';
-    if (contactType) filter.contactType = contactType;
-
-    const paginatedContacts = await getAllContacts({
+    const contacts = await getAllContacts({
       page,
       perPage,
       sortBy,
       sortOrder,
-      userId,
       filter,
+      userId: req.user._id,
     });
 
     res.status(200).json({
       status: 200,
       message: 'Successfully found contacts!',
-      data: paginatedContacts,
+      data: contacts,
     });
   } catch (error) {
     next(error);

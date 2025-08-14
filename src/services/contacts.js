@@ -10,29 +10,26 @@ export const getAllContacts = async ({
   filter = {},
   userId,
 }) => {
-  const query = ContactsCollection.find({ userId });
+  const skip = page > 0 ? (page - 1) * perPage : 0;
 
-  if (filter.contactType) {
-    query.where('contactType').equals(filter.contactType);
+  const contactsQuery = ContactsCollection.find({ userId });
+
+  if (filter.type) {
+    contactsQuery.where('contactType').equals(filter.type);
+  }
+  if (filter.isFavourite) {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-  if (typeof filter.isFavourite === 'boolean') {
-    query.where('isFavourite').equals(filter.isFavourite);
-  }
-
-  // Загальна кількість результатів для пагінації
-  const total = await ContactsCollection.countDocuments(query.getFilter());
-
-  const skip = (page - 1) * perPage;
-
-  const contacts = await query
-    .skip(skip)
-    .limit(perPage)
-    .sort({ [sortBy]: sortOrder })
-    .exec();
-
-  // Підрахунок усіх параметрів пагінації
-  const paginationData = calculatePaginationData(total, perPage, page);
+  const [contactsCount, contacts] = await Promise.all([
+    ContactsCollection.find().merge(contactsQuery).countDocuments(),
+    contactsQuery
+      .skip(skip)
+      .limit(perPage)
+      .sort({ [sortBy]: sortOrder })
+      .exec(),
+  ]);
+  const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
   return {
     data: contacts,
