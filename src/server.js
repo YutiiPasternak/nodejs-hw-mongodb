@@ -4,9 +4,9 @@ import pino from 'pino-http';
 import process from 'process';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-
 import router from './routers/index.js';
 import cookieParser from 'cookie-parser';
+dotenv.config();
 
 export const setupServer = () => {
   const app = express();
