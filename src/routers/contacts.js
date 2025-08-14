@@ -3,8 +3,8 @@ import {
   getContactsController,
   getContactByIdController,
   createContactController,
-  updateContactController,
   deleteContactController,
+  patchContactController,
 } from '../controllers/contacts.js';
 import {
   createContactSchema,
@@ -33,7 +33,7 @@ router.patch(
   isValidId,
   upload.single('photo'),
   validateBody(updateContactSchema),
-  ctrlWrapper(updateContactController),
+  ctrlWrapper(patchContactController),
 );
 router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
