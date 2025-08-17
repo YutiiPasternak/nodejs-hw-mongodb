@@ -12,8 +12,11 @@ tags:
   - name: Auth
     description: Auth operations.
 servers:
-  - url: http://127.0.0.1:3000
   - url: https://nodejs-hw-mongodb-k0o2.onrender.com
+    description: Production server
+  - url: http://127.0.0.1:3000
+    description: Local development server
+
 paths:
   /contacts:
     get:
